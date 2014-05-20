@@ -20,16 +20,16 @@ def init():
   if not os.path.exists("./build"):
     print("mkdir build")
     os.makedirs("build")
+
+  if not os.path.isfile("./faslib/CMakeLists.txt"):
+    print("git update...")
+    subprocess.call(["git", "submodule", "update", "--init"], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
     
   if not os.path.isfile("./build/CMakeCache.txt"):
     print("initialize...")
     os.chdir("./build")
-#    subprocess.call(["cmake", ".."], stdin=None, stdout=None, stderr=None, shell=False)
     subprocess.call(["cmake", ".."], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
     os.chdir("..")
-
-    
-
 
 def write_level():
   f = open('level.inl', 'w')
@@ -62,13 +62,15 @@ def comp_move():
   out, err = p.communicate()
   print out
   items = out.split()
-  for i, b in enumerate(board):
-    if items[i]=='-':
-      board[i]=-1
-    elif items[i]=='X':
-      board[i]=1
-    elif items[i]=='O':
-      board[i]=0
+  
+  if len(items) > 8:
+    for i, b in enumerate(board):
+      if items[i]=='-':
+        board[i]=-1
+      elif items[i]=='X':
+        board[i]=1
+      elif items[i]=='O':
+        board[i]=0
       
   return len(items)==9
 
@@ -100,12 +102,10 @@ def user_move():
   board[ pos ]=player
   
 def game():
-  #print (board)
   write_board()
   if not comp_move():
     return 0
   user_move()
-  #os.system("make --directory=./build ")
   return 1
 
 if __name__ == '__main__':
@@ -113,11 +113,9 @@ if __name__ == '__main__':
   level = input("Level [0,1,2]: ")
   write_level()
   O, o = 0, 0
-  x=1
-  X=1
+  X, x= 1, 1
   fig = input("Figure [X,x,1,O,o,0]: ")
   player=fig
-  #print player
   
   if player==1:
     user_move()

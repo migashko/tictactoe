@@ -12,6 +12,7 @@
 /// ///////////////////////////////////////////
 /// ///////////////////////////////////////////
 
+
 template<typename L>
 struct last
 {
@@ -21,20 +22,21 @@ struct last
   >::type type;
 };
 
-template<int Pos, typename V, typename L>
+
+template<int Pos, typename T, typename L>
 struct set_at_c
 {
   typedef fas::split_c<Pos, L> splitter;
   typedef typename splitter::left_list left_list;
   typedef typename splitter::right_list right_list;
   typedef typename fas::tail< right_list >::type headless;
-  typedef fas::type_list< V, headless > pollywog;
+  typedef typename fas::push_front< T, headless >::type pollywog;
   typedef typename fas::merge< left_list, pollywog >::type type;
 };
 
-template<typename Pos, typename V, typename L>
+template<typename Pos, typename T, typename L>
 struct set_at
-  : set_at_c< Pos::value, V, L>
+  : set_at_c< Pos::value, T, L>
 {
 };
 
@@ -43,56 +45,67 @@ struct set_at
 /// ///////////////////////////////////////////
 
 template<typename Board>
-struct is_full
+struct figure
 {
-  enum {
-    value = fas::type_count< $, Board >::value == 0
-  };
-  typedef fas::int_<value> type;
+  typedef typename fas::if_c<
+    fas::type_count< $, Board>::value % 2 == 1, 
+    x, 
+    o
+  >::type type;
 };
 
-template<typename Fig, typename PairList>
+template<typename Fig, typename PairList3>
 struct is_win_line
 {
   enum {
-    value = fas::count_if< PairList , fas::same_type< Fig, fas::second<fas::_1> > >::value == 3
+    value = fas::count_if< 
+      PairList3 , 
+      fas::same_type< Fig, fas::second<fas::_1> > 
+    >::value == 3
   };
 };
 
-
-template<typename Fig, typename PairList>
+template<typename Fig, typename PairList3>
 struct has_win_pos
 {
   enum {
     value = 
-         fas::count_if< PairList , fas::same_type< $,   fas::second<fas::_1> > >::value == 1
-      && fas::count_if< PairList , fas::same_type< Fig, fas::second<fas::_1> > >::value == 2
+         fas::count_if< 
+           PairList3 , 
+           fas::same_type< $,   fas::second<fas::_1> > 
+          >::value == 1
+      && fas::count_if< 
+           PairList3 , 
+           fas::same_type< Fig, fas::second<fas::_1> > 
+          >::value == 2
   };
 };
 
 /// /////////////////////////////////////////
 
-template<typename Fig, typename PairList>
+template<typename Fig, typename PairList3 >
 struct win_helper
 {
   typedef typename fas::if_c<
-    has_win_pos< Fig, PairList >::value, 
-    typename fas::select< PairList, fas::same_type< fas::second<fas::_1>, $> >::type, 
+    has_win_pos< Fig, PairList3 >::value, 
+    typename fas::select< 
+      PairList3, 
+      fas::same_type< fas::second<fas::_1>, $> 
+    >::type, 
     fas::empty_list
   >::type type;
 };
 
-
-template<typename Fig, typename PairList>
+template<typename Fig, typename PairList3>
 struct winning_move
 {
   typedef typename fas::transform<
-    typename win_helper< Fig, PairList >::type, 
+    typename win_helper< Fig, PairList3 >::type, 
     fas::pair< fas::first<fas::_1>, Fig > 
   >::type type;
 };
 
-template<typename Fig, typename PairList>
+template<typename Fig, typename PairList3 >
 struct blocking_move
 {
   typedef typename fas::if_<
@@ -101,15 +114,21 @@ struct blocking_move
     x
   >::type rev_fig;
 
-  typedef typename win_helper< rev_fig, PairList >::type type;
+  typedef typename win_helper< rev_fig, PairList3 >::type type;
 };
 
-template<typename, typename PairList>
+template<typename, typename PairList3>
 struct winner_line
 {
   typedef typename fas::switch_<
-    fas::case_c< is_win_line<x, PairList>::value, fas::pair< fas::int_<-1>, x> >, 
-    fas::case_c< is_win_line<o, PairList>::value, fas::pair< fas::int_<-1>, o> >,
+    fas::case_c< 
+      is_win_line<x, PairList3>::value, 
+      fas::pair< fas::int_<-1>, x> 
+    >, 
+    fas::case_c< 
+      is_win_line<o, PairList3>::value, 
+      fas::pair< fas::int_<-1>, o> 
+    >,
     fas::default_< fas::empty_list >
   >::type type;
 };
@@ -161,7 +180,7 @@ template<typename Board>
 struct draw_list
 {
   typedef typename fas::if_c<
-    is_full< Board >::value, 
+    fas::type_count< $, Board >::value < 3, 
     fas::pair< fas::int_<-1>, $ >, 
     fas::empty_list
   >::type type;
@@ -189,8 +208,18 @@ template<typename R, typename Level>
 struct priority_positions
 {
   typedef fas::int_<4> center;
-  typedef fas::type_list_n< fas::int_<0>, fas::int_<2>, fas::int_<6>, fas::int_<8> >::type corner_list;
-  typedef fas::type_list_n< fas::int_<1>, fas::int_<3>, fas::int_<5>, fas::int_<7> >::type side_list;
+
+  typedef fas::type_list_n< 
+    fas::int_<0>, fas::int_<2>, 
+    fas::int_<6>, fas::int_<8> 
+  >::type corner_list;
+  
+  typedef fas::type_list_n< 
+    fas::int_<1>, fas::int_<3>, 
+    fas::int_<5>, fas::int_<7> 
+  >::type edge_list;
+  
+  typedef typename fas::merge< corner_list, edge_list >::type side_list;
   
   typedef typename fas::merge<
     center, 
@@ -202,23 +231,14 @@ struct priority_positions
 
   typedef typename fas::merge<
     center, 
-    typename fas::random_shuffle< 
-      R, 
-      typename fas::merge<
-        corner_list, 
-        side_list
-      >::type
-    >::type
+    typename fas::random_shuffle< R, side_list>::type
   >::type level1_list;
 
-  typedef typename fas::random_shuffle< 
-      R, 
-      level2_list
-  >::type level0_list;
+  typedef typename fas::random_shuffle< R, level2_list >::type level0_list;
 
   typedef typename fas::switch_<
-    fas::case_< fas::same_type< Level, fas::int_<0> >, level0_list >, 
-    fas::case_< fas::same_type< Level, fas::int_<1> >, level1_list >, 
+    fas::case_c< Level::value == 0, level0_list >, 
+    fas::case_c< Level::value == 1, level1_list >, 
     fas::default_< level2_list >
   >::type type;
 };
@@ -227,7 +247,7 @@ struct priority_positions
 template<typename R, typename Level, typename Board>
 struct free_moves
 {
-  typedef typename fas::transform  <
+  typedef typename fas::transform<
     typename priority_positions< R, Level >::type,
     fas::pair<
       fas::_1, 
@@ -239,7 +259,7 @@ struct free_moves
     pair_list, 
     fas::same_type< 
       $, 
-      fas::second<fas::_1>
+      fas::second<fas::_>
     >
   >::type type;
 };
@@ -256,41 +276,24 @@ template<
 struct available_moves
 {
   typedef typename fas::type_list_n<
-    typename draw_list< Board >::type, 
     typename winner_list< Fig, Board >::type, 
     typename winning_moves< Fig, Board >::type, 
     typename blocking_moves< Fig, Board >::type, 
+    typename draw_list< Board >::type, 
     typename free_moves<R, Level, Board >::type
   >::type type;
-};
-
-template<typename Board>
-struct figure
-{
-  typedef typename fas::if_c<
-    fas::type_count< $, Board>::value % 2 == 1, 
-    x, 
-    o
-  >::type type;
-  
 };
 
 template<typename Pos, typename Fig,  typename Board>
 struct do_move
 {
-  typedef typename fas::for_<
-    fas::pair< Pos, Board>, 
-    fas::not_equal_to< 
-      fas::first<fas::_1>, 
-      fas::int_<-1> 
-    >, 
-    fas::pair<
-      fas::int_<-1>, 
-      set_at< Pos, Fig, fas::second<fas::_1> >
-    >
-  >::type result;
+  typedef typename set_at< Pos, Fig, Board >::type type;
+};
 
-  typedef typename fas::second<result>::type type;
+template<typename Fig,  typename Board>
+struct do_move< fas::int_<-1>, Fig, Board>
+{
+  typedef fas::empty_list type;
 };
 
 template<typename R, typename Level, typename Board>

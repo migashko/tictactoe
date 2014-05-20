@@ -40,35 +40,41 @@ namespace std
   {
   }
 
+  /*
+   * [ pos, fig, board ] - победный ход компилятора
+   * [ pos, $,   board ] - очередной ход
+   * [ pos, $,   board ] - очередной ход
+   * [ -1,  fig, empty_list ] - исходная доска с победителем Fig
+   * [ -1 , $,   empty_list ] - исходная доска с нечей
+*/
 
   template<typename Pos, typename Fig, typename Board>
-  std::ostream& operator<<(std::ostream& s,  fas::tuple< Pos, Fig, Board>) 
+  std::ostream& operator<< ( std::ostream& s, fas::tuple< Pos, Fig, Board> ) 
   { 
-    //std::cout <<  Fig() << Pos::value << std::endl;
     s << Board();
     
-    // [-1, $] - ничья
-    // [-1, x] - есть победитель
-    // [ 3, x] - компилятор победил
-    // [ 3, $] ход
-    if ( is_full<Board>::value )
+    enum {
+      nopos   = fas::same_type< Pos, fas::int_<-1> >::value, 
+      nofig   = fas::same_type< $, Fig>::value
+    };
+    
+    if ( nopos )
     {
-      s << "Draw" << std::endl;
+      if (nofig)
+        s << "Draw" << std::endl;
+      else
+        s << Fig() << " winner (you)" << std::endl;
     }
-    else if ( !fas::same_type< $, Fig>::value && !fas::same_type< fas::int_<-1>, Pos >::value )
+    else if ( !nofig )
     {
       s << Fig() << " winner (compiler)" << std::endl;
     }
-    else if ( !fas::same_type< $, Fig>::value && fas::same_type< fas::int_<-1>, Pos >::value )
-    {
-      s << Fig() << " winner (you)" << std::endl;
-    }
   }
 
-  template<typename Pos, typename F, typename S, typename Tail>
-  std::ostream& operator<<(std::ostream& s,  fas::type_list<fas::tuple< Pos, F, S>, Tail>) 
+  template<typename Pos, typename Fig, typename Board, typename Tail>
+  std::ostream& operator<<(std::ostream& s,  fas::type_list<fas::tuple< Pos, Fig, Board>, Tail>) 
   {
-    s << fas::tuple<Pos, F, S>() << std::endl;
+    s << fas::tuple<Pos, Fig, Board>() << std::endl;
     s << Tail();
   }
   

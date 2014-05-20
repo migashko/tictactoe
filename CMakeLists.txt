@@ -2,38 +2,41 @@ cmake_minimum_required(VERSION 2.6)
 
 project(tictactoy CXX)
 
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -ftemplate-backtrace-limit=0")
+add_subdirectory(faslib)
 
-include_directories(../faslib)
-#add_executable(tictactoe tictactoe.cpp)
-#add_executable(tictactoe2 tictactoe2.cpp)
-#add_executable(tictactoe3 tictactoe3.cpp)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/faslib)
+
 add_executable(tictactoe_its tictactoe_its.cpp)
 add_executable(tictactoe tictactoe.cpp)
-#add_executable(test test.cpp)
 
-string(TIMESTAMP ts "%M%S")
-message(STATUS " ------------- ${ts} ------------------- ")
-string(RANDOM LENGTH 4 ALPHABET 0123456789 RANDOM_SEED ${ts} initial_rand)
+set( level_sh "./level.sh")
+set( board_sh "./board.sh")
+set( rand_sh "./rand.sh")
+
+if (WIN32)
+ set( level_sh "level.cmd")
+ set( board_sh "board.cmd")
+ set( rand_sh "rand.cmd")
+endif()
 
 add_custom_target(
     rand
     COMMAND
-      ./rand.sh
+      ${rand_sh}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(
   board 
   COMMAND
-    ./board.sh
+    ${board_sh}
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(
   level 
   COMMAND
-    ./level.sh
+    ${level_sh}
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
