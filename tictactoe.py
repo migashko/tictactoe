@@ -14,21 +14,42 @@ board = [
 ]
 
 DEVNULL = open(os.devnull, 'wb')
-
-def init():
+make = None
+rm = None
+def find_exec(*args):
+  found = None
+  for arg in args:
+    try:
+      subprocess.call([arg], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
+      found = arg
+      break
+    except:
+      pass
+  if not found:
+    print("Error {} not found".format(args) )
+    exit()
+  return found
   
-  if not os.path.exists("./build"):
+def init():
+  global make
+  make = find_exec("nmake", "make")
+  if not os.path.exists("build"):
     print("mkdir build")
     os.makedirs("build")
 
-  if not os.path.isfile("./faslib/CMakeLists.txt"):
+  if not os.path.isfile("faslib/CMakeLists.txt"):
     print("git update...")
+    find_exec("git")
     subprocess.call(["git", "submodule", "update", "--init"], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
     
-  if not os.path.isfile("./build/CMakeCache.txt"):
+  if not os.path.isfile("build/CMakeCache.txt"):
     print("initialize...")
-    os.chdir("./build")
-    subprocess.call(["cmake", ".."], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
+    find_exec("cmake")
+    os.chdir("build")
+    if make=="nmake":
+      subprocess.call(["cmake", "-G", "NMake Makefiles", "-DCMAKE_BUILD_TYPE=Release", ".."], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
+    else:
+      subprocess.call(["cmake", ".."], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
     os.chdir("..")
 
 def write_level():
@@ -53,11 +74,12 @@ def write_board():
       
 def comp_move():
   print ("compiling...")
+  global make
+  os.chdir("build")
+  subprocess.call([make, "tictactoe"], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
+  os.chdir("..")
   
-  subprocess.call(["rm", "./build/tictactoe"], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
-  subprocess.call(["make", "--directory=./build", "tictactoe"], stdin=None, stdout=DEVNULL, stderr=DEVNULL, shell=False)
-  
-  p = subprocess.Popen("./build/tictactoe", stdout=subprocess.PIPE)
+  p = subprocess.Popen("build/tictactoe", stdout=subprocess.PIPE)
   
   out, err = p.communicate()
   print out

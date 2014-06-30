@@ -45,14 +45,6 @@ namespace std
     return s;
   }
 
-  /*
-   * [ pos, fig, board ] - победный ход компилятора
-   * [ pos, e,   board ] - очередной ход
-   * [ pos, e,   board ] - очередной ход
-   * [ -1,  fig, empty_list ] - исходная доска с победителем Fig
-   * [ -1 , e,   empty_list ] - исходная доска с нечей
-*/
-
   template<typename Pos, typename Fig, typename Board>
   std::ostream& operator<< ( std::ostream& s, fas::tuple< Pos, Fig, Board> ) 
   { 
