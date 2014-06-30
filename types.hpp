@@ -4,7 +4,7 @@
 #include <fas/integral.hpp>
 #include <fas/type_list.hpp>
 
-struct $ {};
+struct e {};
 struct x {};
 struct o {};
 
@@ -22,9 +22,9 @@ typedef fas::type_list_n<
 
 
 typedef fas::type_list_n<
-    $, $, $, 
-    $, $, $, 
-    $, $, $
+    e, e, e, 
+    e, e, e, 
+    e, e, e
 >::type empty_board;
 
 #endif

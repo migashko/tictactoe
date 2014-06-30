@@ -41,7 +41,7 @@ def write_board():
   f = open('board.inl', 'w')
   for i, b in enumerate(board) :
     if b==-1:
-      f.write("$")
+      f.write("e")
     elif b==0:
       f.write("o")
     elif b==1:

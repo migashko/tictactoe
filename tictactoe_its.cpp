@@ -8,7 +8,7 @@ int main()
     fas::type_list< 
       fas::tuple< 
         fas::empty_type, 
-        $,
+        e,
         board
       > 
     >, 
@@ -20,7 +20,7 @@ int main()
         >
       >, 
       fas::same_type<
-        $, 
+        e, 
         fas::second< last< fas::_1> >
       > 
     >, 

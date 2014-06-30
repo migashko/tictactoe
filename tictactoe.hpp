@@ -48,7 +48,7 @@ template<typename Board>
 struct figure
 {
   typedef typename fas::if_c<
-    fas::type_count< $, Board>::value % 2 == 1, 
+    fas::type_count< e, Board>::value % 2 == 1, 
     x, 
     o
   >::type type;
@@ -72,7 +72,7 @@ struct has_win_pos
     value = 
          fas::count_if< 
            PairList3 , 
-           fas::same_type< $,   fas::second<fas::_1> > 
+           fas::same_type< e,   fas::second<fas::_1> > 
           >::value == 1
       && fas::count_if< 
            PairList3 , 
@@ -90,7 +90,7 @@ struct win_helper
     has_win_pos< Fig, PairList3 >::value, 
     typename fas::select< 
       PairList3, 
-      fas::same_type< fas::second<fas::_1>, $> 
+      fas::same_type< fas::second<fas::_1>, e> 
     >::type, 
     fas::empty_list
   >::type type;
@@ -180,8 +180,8 @@ template<typename Board>
 struct draw_list
 {
   typedef typename fas::if_c<
-    fas::type_count< $, Board >::value < 3, 
-    fas::pair< fas::int_<-1>, $ >, 
+    fas::type_count< e, Board >::value < 3, 
+    fas::pair< fas::int_<-1>, e >, 
     fas::empty_list
   >::type type;
 };
@@ -258,7 +258,7 @@ struct free_moves
   typedef typename fas::select<
     pair_list, 
     fas::same_type< 
-      $, 
+      e, 
       fas::second<fas::_>
     >
   >::type type;

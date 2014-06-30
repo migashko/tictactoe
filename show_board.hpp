@@ -8,19 +8,22 @@
 
 namespace std
 {
-  std::ostream& operator<<(std::ostream& s,  $) 
+  std::ostream& operator<<(std::ostream& s,  e) 
   {
     s << "-";
+    return s;
   }
 
   std::ostream& operator<<(std::ostream& s,  o) 
   {
     s << "O";
+    return s;
   }
 
   std::ostream& operator<<(std::ostream& s,  x) 
   {
     s << "X";
+    return s;
   }
   
   template<typename L, typename R>
@@ -33,19 +36,21 @@ namespace std
     else if (len != 0)
       s <<  " ";
     s << R();
+    return s;
   }
 
   
   std::ostream& operator<<(std::ostream& s, fas::empty_list) 
   {
+    return s;
   }
 
   /*
    * [ pos, fig, board ] - победный ход компилятора
-   * [ pos, $,   board ] - очередной ход
-   * [ pos, $,   board ] - очередной ход
+   * [ pos, e,   board ] - очередной ход
+   * [ pos, e,   board ] - очередной ход
    * [ -1,  fig, empty_list ] - исходная доска с победителем Fig
-   * [ -1 , $,   empty_list ] - исходная доска с нечей
+   * [ -1 , e,   empty_list ] - исходная доска с нечей
 */
 
   template<typename Pos, typename Fig, typename Board>
@@ -55,7 +60,7 @@ namespace std
     
     enum {
       nopos   = fas::same_type< Pos, fas::int_<-1> >::value, 
-      nofig   = fas::same_type< $, Fig>::value
+      nofig   = fas::same_type< e, Fig>::value
     };
     
     if ( nopos )
@@ -69,6 +74,7 @@ namespace std
     {
       s << Fig() << " winner (compiler)" << std::endl;
     }
+    return s;
   }
 
   template<typename Pos, typename Fig, typename Board, typename Tail>
@@ -76,9 +82,8 @@ namespace std
   {
     s << fas::tuple<Pos, Fig, Board>() << std::endl;
     s << Tail();
+    return s;
   }
-  
 }
-
 
 #endif
