@@ -9,14 +9,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/faslib)
 add_executable(tictactoe_its tictactoe_its.cpp)
 add_executable(tictactoe tictactoe.cpp)
 
-set( level_sh "./level.sh")
-set( board_sh "./board.sh")
-set( rand_sh "./rand.sh")
+set( level_sh "${CMAKE_CURRENT_SOURCE_DIR}/level.sh")
+set( board_sh "${CMAKE_CURRENT_SOURCE_DIR}/board.sh")
+set( rand_sh "${CMAKE_CURRENT_SOURCE_DIR}/rand.sh")
 
 if (WIN32)
- set( level_sh "level.cmd")
- set( board_sh "board.cmd")
- set( rand_sh "rand.cmd")
+ set( level_sh "${CMAKE_CURRENT_SOURCE_DIR}\level.cmd")
+ set( board_sh "${CMAKE_CURRENT_SOURCE_DIR}\board.cmd")
+ set( rand_sh "${CMAKE_CURRENT_SOURCE_DIR}\rand.cmd")
 endif()
 
 add_custom_target(
