@@ -2,6 +2,7 @@
 #include "types.hpp"
 #include "show_board.hpp"
 #include <iostream>
+#include <cstdio>
 
 template<int I, typename Fig>
 void input_pos(fas::empty_list);
@@ -42,15 +43,20 @@ void set_fig( fas::int_<Pos>, int pos)
 template<int I, typename Fig>
 void input_pos(fas::empty_list)
 {
-  std::cout << "Done" << std::endl;
+  //std::cout << "Done" << std::endl;
+  printf("Done\n");
+
 }
 
 template<int I, typename Fig, typename Board>
 void input_pos(Board)
 {
   int pos = 0;
-  std::cout << "Pos [0..8]: ";
-  std::cin >> pos;
+  /*std::cout << "Pos [0..8]: ";
+  std::cin >> pos;*/
+  printf("Pos [0..8]: ");
+  scanf("%d", &pos);
+
   set_fig<I, Fig, Board>(fas::int_<0>(), pos);
 }
 
@@ -73,8 +79,11 @@ template<int I>
 void select_fig( )
 {
   char fig = 'x';
-  std::cout << "Fig [x, o]: ";
-  std::cin >> fig;
+  // std::cout << "Fig [x, o]: ";
+  //std::cin >> fig;
+  printf("Fig [x, o]: ");
+  scanf("%c", &fig);
+
   if (fig=='o')
     start_game<I>(o());
   else
@@ -100,8 +109,12 @@ void select_level( fas::int_<I>, int level)
 int main()
 {
   int level = 0;
+  printf("Level [0,1,2]: ");
+  scanf("%d", &level);
+  /*
   std::cout << "Level [0,1,2]: ";
   std::cin >> level;
+  */
   select_level( fas::int_<0>(), level);
   /*
   typedef game< initial_rand, level, board >::type result;
