@@ -28,7 +28,7 @@ void set_fig( fas::int_<8>, int )
 template<int I, typename Fig, typename Board, int Pos>
 void set_fig( fas::int_<Pos>, int pos)
 {
-  if (pos == I)
+  if (pos == Pos)
   {
     typedef typename set_at_c<Pos, Fig, Board>::type board;
     next_game<I, Fig, board>();
