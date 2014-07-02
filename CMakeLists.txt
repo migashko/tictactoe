@@ -7,7 +7,11 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 if(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -pedantic -fno-rtti")
+#   if ( NOT ${gcc_version_number} LESS 4008 )
+      SET(CMAKE_CXX_STANDARD    "${CMAKE_CXX_STANDARD} -ftemplate-backtrace-limit=0")
+#endif()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_STANDARD} -W -Wall -pedantic -fno-rtti")
+
   message(STATUS "CMAKE_CXX_COMPILER_VERSION = ${CMAKE_CXX_COMPILER_VERSION}")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG ")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-O2 -g -DNDEBUG")
@@ -26,6 +30,7 @@ add_subdirectory(faslib)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/faslib)
 
+add_executable(tictactoe_iter tictactoe_iter.cpp)
 add_executable(tictactoe_its tictactoe_its.cpp)
 add_executable(tictactoe tictactoe.cpp)
 
